@@ -244,7 +244,7 @@ namespace Epicoin.Library
                             throw new Exception();
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         Console.WriteLine("Invalid amount");
                         continue;
@@ -358,7 +358,7 @@ namespace Epicoin.Library
                 {
                     ExportChain();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                 }
                 

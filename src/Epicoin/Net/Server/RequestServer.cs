@@ -25,7 +25,7 @@ namespace Epicoin.Library.Net.Server
             {
                 TransAmount = int.Parse(transaction.Amount);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new Protocol(MessageType.Error) {Message = "Bad amount"};
             }
@@ -77,7 +77,7 @@ namespace Epicoin.Library.Net.Server
                 Block b = DataServer.Chain.Chainlist[number];
                 return new Protocol(MessageType.Response) {Block = b};
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new Protocol(MessageType.Error) {Message = "Invalid block number"};
             }
@@ -148,7 +148,7 @@ namespace Epicoin.Library.Net.Server
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new Protocol(MessageType.Error) {Message = "Block invalid"};
             }

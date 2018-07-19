@@ -16,7 +16,7 @@ namespace Epicoin.Library.Net.Client
             {
                 DataClient.Client.Client.Connect(DataClient.Address, DataClient.Port);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 DataClient.Client.Client.Connect(DataClient.IpAddressEntry.AddressList, port);
             }

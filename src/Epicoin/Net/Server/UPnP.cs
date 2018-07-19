@@ -16,7 +16,7 @@ namespace Epicoin.Library.Net.Server
         
         private void DeviceFound(object sender, DeviceEventArgs args)
         {
-            INatDevice device = device = args.Device;
+            INatDevice device = args.Device;
             device.CreatePortMap(new Mapping(Mono.Nat.Protocol.Tcp, this.port, this.port));
  
             foreach (Mapping portMap in device.GetAllMappings())

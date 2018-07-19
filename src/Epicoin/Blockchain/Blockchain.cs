@@ -46,7 +46,6 @@ namespace Epicoin.Library.Blockchain
             genesisBlock.AddTransaction(new Transaction(null, this.addressCreator, 500));
             genesisBlock.AddPreviousHash("");
             genesisBlock.MineBlock(this.difficulty);
-            //Console.WriteLine("[B] Add genesis block");
             return genesisBlock;
         }
 
@@ -107,7 +106,6 @@ namespace Epicoin.Library.Blockchain
         {
             if (this.PrepareBlockToMine())
             {
-                //Console.WriteLine("[C] Creating Block " + this.BlockToMine.Index + " with difficulty " + this.Difficulty);
                 this.BlockToMine = null;
             }
         }
@@ -119,7 +117,6 @@ namespace Epicoin.Library.Blockchain
                 this.BlockToMines[0].Index = GetLatestIndex() + 1;
                 this.BlockToMines[0].PreviousHash = this.GetLatestBlock().Hashblock;
                 this.BlockToMines[0].Timestamp = DateTime.Now.Ticks;
-                //Console.WriteLine("[NB] Next to block " + this.BlockToMines[0].Index + " with difficulty " + this.Difficulty);
             }
         }
         
@@ -159,11 +156,11 @@ namespace Epicoin.Library.Blockchain
                 }
             
                 Transaction reward = new Transaction(null, minerAdress, this.miningReward);
-                //Console.WriteLine("[M] Block mined " + mineblock.Index + " : " + mineblock.Hashblock + " by " + minerAdress);
+                Console.WriteLine("[M] Block mined " + mineblock.Index + " : " + mineblock.Hashblock + " by " + minerAdress);
                 this.AddTransaction(reward);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -221,11 +218,11 @@ namespace Epicoin.Library.Blockchain
                 this.NextBlock();
                 
                 Transaction reward = new Transaction(null, minerAdress, this.miningReward);
-                //Console.WriteLine("[M] Block mined " + b.Index + " : " + b.Hashblock + " by " + minerAdress);
+                Console.WriteLine("[M] Block mined " + b.Index + " : " + b.Hashblock + " by " + minerAdress);
                 this.AddTransaction(reward);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -235,7 +232,6 @@ namespace Epicoin.Library.Blockchain
         {
             try
             {
-                //Console.Write("[T] transaction: " + (t.FromAddress ?? Blockchain.Name) + " - " + t.ToAddress + " : " + t.Amount);
                 int amount = this.GetBalanceOfAddress(t.FromAddress);
                 foreach (var pendingt in this.PendingTransactions)
                 {
@@ -262,11 +258,9 @@ namespace Epicoin.Library.Blockchain
                     //Console.Write(" : accepted\n");
                     return true;
                 }
-                
-                //Console.Write(" : rejeted\n");
                 return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -336,12 +330,14 @@ namespace Epicoin.Library.Blockchain
             {
                 return;
             }
+            
             if (newChain.Chainlist.Count > this.Chain.Count)
             {
                 this.Chain = newChain.Chainlist;
                 this.Validate();
             }
-            else if (newChain.Chainlist.Count == this.Chain.Count)
+            
+            if (newChain.Chainlist.Count == this.Chain.Count)
             {
                 int i;
                 for (i = 0; i < this.Chain.Count; i++)
@@ -391,10 +387,6 @@ namespace Epicoin.Library.Blockchain
                     
                 }
                 this.Validate();
-            }
-            else
-            {
-                return;
             }
         }
     }
