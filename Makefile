@@ -24,6 +24,7 @@ clean-build:
 
 build: clean check
 	mkdir -p $(CURRENT_DIR)$(BIN_DIR)
+	nuget restore src/Epicoin/Epicoin.sln
 	@cd $(CURRENT_DIR)$(SOURCE_DIR) && msbuild /p:Configuration=Debug /v:m && msbuild /p:Configuration=Release /v:m 
 	cd $(CURRENT_DIR)
 	cp -r $(CURRENT_DIR)$(SOURCE_DIR)bin/* $(CURRENT_DIR)$(BIN_DIR)
