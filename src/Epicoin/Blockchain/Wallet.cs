@@ -11,16 +11,16 @@ namespace Epicoin.Library.Blockchain
         public List<string> Address;
 
         public List<string> PrivKey;
-        public List<string> PubKey;
+        public List<string> PublicKey;
 
         public List<int> Amount;
-        
+
         public Wallet(string name)
         {
             this.Name = name;
             this.Address = new List<string>();
             this.PrivKey = new List<string>();
-            this.PubKey = new List<string>();
+            this.PublicKey = new List<string>();
             this.Amount = new List<int>();
         }
 
@@ -28,7 +28,7 @@ namespace Epicoin.Library.Blockchain
         {
             string[] data = Rsa.GenKey(2048);
             this.PrivKey.Add(data[0]);
-            this.PubKey.Add(data[1]);
+            this.PublicKey.Add(data[1]);
             string address = Hash.CpuGenerate(data[1]);
             this.Address.Add(address);
             return address;
@@ -37,14 +37,15 @@ namespace Epicoin.Library.Blockchain
         public void GetAmount()
         {
             this.Amount = new List<int>();
-            Blockchain chain = Epicoin.client.GetBlockchain();
+            Blockchain chain = Epicoin.Client.GetBlockchain();
             if (chain == null)
             {
                 return;
             }
-            for (int i = 0; i < this.Address.Count; i++)
+
+            foreach (var address in this.Address)
             {
-                this.Amount.Add(chain.GetBalanceOfAddress(this.Address[i]));
+                this.Amount.Add(chain.GetBalanceOfAddress(address));
             }
         }
 
@@ -83,8 +84,9 @@ namespace Epicoin.Library.Blockchain
                     tmpamount = this.Amount[i];
                     amount -= this.Amount[i];
                 }
+
                 DataTransaction datatrans = new DataTransaction(
-                    this.PubKey[i], /*
+                    this.PublicKey[i], /*
                     Rsa.Encrypt(this.PrivKey[i], this.Address[i]), 
                     Rsa.Encrypt(this.PrivKey[i], toAddress), 
                     Rsa.Encrypt(this.PrivKey[i], tmpamount.ToString())

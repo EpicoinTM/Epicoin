@@ -7,38 +7,39 @@ namespace Epicoin.Library.Net.Server
 {
     public static class RequestServer
     {
-        public static Protocol Transaction(Protocol prot)
+        public static Protocol Transaction(Protocol protocol)
         {
-            DataTransaction transaction = prot.Transaction;
+            DataTransaction transaction = protocol.Transaction;
             if (transaction == null)
             {
                 return new Protocol(MessageType.Error) {Message = "Bad Transaction"};
             }
 
-            if (transaction.EncodeFromAddress != Hash.CpuGenerate(transaction.PubKey))
+            if (transaction.EncodeFromAddress != Hash.CpuGenerate(transaction.PublicKey))
             {
                 return new Protocol(MessageType.Error) {Message = "Bad sender address"};
             }
 
-            int TransAmount = 0;
+            int transAmount = 0;
             try
             {
-                TransAmount = int.Parse(transaction.Amount);
+                transAmount = int.Parse(transaction.Amount);
             }
             catch (Exception)
             {
                 return new Protocol(MessageType.Error) {Message = "Bad amount"};
             }
-            
-            int amount =  DataServer.Chain.GetBalanceOfAddress(transaction.EncodeFromAddress);
 
-            if (TransAmount > amount)
+            int amount = DataServer.Chain.GetBalanceOfAddress(transaction.EncodeFromAddress);
+
+            if (transAmount > amount)
             {
                 return new Protocol(MessageType.Error) {Message = "You do not have enough epicoins to do that!"};
             }
-            
-            Transaction NewTransaction = new Transaction(transaction.EncodeFromAddress, transaction.ToAddress, TransAmount);
-            bool success = DataServer.Chain.AddTransaction(NewTransaction);
+
+            Transaction newTransaction =
+                new Transaction(transaction.EncodeFromAddress, transaction.ToAddress, transAmount);
+            bool success = DataServer.Chain.AddTransaction(newTransaction);
 
             if (success)
             {
@@ -49,21 +50,21 @@ namespace Epicoin.Library.Net.Server
                 return new Protocol(MessageType.Response) {Message = "Failed to add transaction"};
             }
         }
-        
-        public static Protocol AskChain(Protocol prot)
+
+        public static Protocol AskChain()
         {
             Protocol resp = new Protocol(MessageType.Response);
             resp.Chain = DataServer.Chain;
             return resp;
         }
-        
-        public static Protocol AskLastestBlock(Protocol prot)
+
+        public static Protocol AskLastestBlock()
         {
             Protocol resp = new Protocol(MessageType.AskLastestBlock);
             resp.Block = DataServer.Chain.GetLatestBlock();
             return resp;
         }
-        
+
         public static Protocol AskBlockNumber(Protocol prot)
         {
             if (string.IsNullOrEmpty(prot.Message))
@@ -81,9 +82,9 @@ namespace Epicoin.Library.Net.Server
             {
                 return new Protocol(MessageType.Error) {Message = "Invalid block number"};
             }
-        }        
-        
-        public static Protocol AskBlockToMine(Protocol prot)
+        }
+
+        public static Protocol AskBlockToMine()
         {
             if (DataServer.Chain.BlockToMines.Count == 0)
             {
@@ -95,30 +96,31 @@ namespace Epicoin.Library.Net.Server
                 Mine = new DataMine(DataServer.Chain.Difficulty, DataServer.Chain.BlockToMines[0], null)
             };
         }
-        
+
         public static Protocol MinedBlock(Protocol prot)
         {
             if (prot.Mine == null)
             {
-                return new Protocol(MessageType.Error) {Message = "Empty block"};               
+                return new Protocol(MessageType.Error) {Message = "Empty block"};
             }
 
             DataMine dataMine = prot.Mine;
-            if (dataMine.block == null)
+            if (dataMine.Block == null)
             {
                 return new Protocol(MessageType.Error) {Message = "Empty block"};
             }
-            
-            if (dataMine.block.Data == null)
-            {
-                return new Protocol(MessageType.Error) {Message = "Block invalid"};
-            }
-            if (DataServer.Chain.BlockToMines[0].Index != dataMine.block.Index)
+
+            if (dataMine.Block.Data == null)
             {
                 return new Protocol(MessageType.Error) {Message = "Block invalid"};
             }
 
-            if (DataServer.Chain.BlockToMines[0].Timestamp != dataMine.block.Timestamp)
+            if (DataServer.Chain.BlockToMines[0].Index != dataMine.Block.Index)
+            {
+                return new Protocol(MessageType.Error) {Message = "Block invalid"};
+            }
+
+            if (DataServer.Chain.BlockToMines[0].Timestamp != dataMine.Block.Timestamp)
             {
                 return new Protocol(MessageType.Error) {Message = "Block invalid"};
             }
@@ -127,22 +129,22 @@ namespace Epicoin.Library.Net.Server
             {
                 for (int i = 0; i < Block.nb_trans; i++)
                 {
-                    if (DataServer.Chain.BlockToMines[0].Data[i].Amount != dataMine.block.Data[i].Amount)
+                    if (DataServer.Chain.BlockToMines[0].Data[i].Amount != dataMine.Block.Data[i].Amount)
                     {
                         return new Protocol(MessageType.Error) {Message = "Block invalid"};
                     }
 
-                    if (DataServer.Chain.BlockToMines[0].Data[i].FromAddress != dataMine.block.Data[i].FromAddress)
+                    if (DataServer.Chain.BlockToMines[0].Data[i].FromAddress != dataMine.Block.Data[i].FromAddress)
                     {
                         return new Protocol(MessageType.Error) {Message = "Block invalid"};
                     }
 
-                    if (DataServer.Chain.BlockToMines[0].Data[i].ToAddress != dataMine.block.Data[i].ToAddress)
+                    if (DataServer.Chain.BlockToMines[0].Data[i].ToAddress != dataMine.Block.Data[i].ToAddress)
                     {
                         return new Protocol(MessageType.Error) {Message = "Block invalid"};
                     }
 
-                    if (DataServer.Chain.BlockToMines[0].Data[i].Timestamp != dataMine.block.Data[i].Timestamp)
+                    if (DataServer.Chain.BlockToMines[0].Data[i].Timestamp != dataMine.Block.Data[i].Timestamp)
                     {
                         return new Protocol(MessageType.Error) {Message = "Block invalid"};
                     }
@@ -152,15 +154,16 @@ namespace Epicoin.Library.Net.Server
             {
                 return new Protocol(MessageType.Error) {Message = "Block invalid"};
             }
-            
 
-            if (DataServer.Chain.BlockToMines[0].PreviousHash != dataMine.block.PreviousHash)
+
+            if (DataServer.Chain.BlockToMines[0].PreviousHash != dataMine.Block.PreviousHash)
             {
                 return new Protocol(MessageType.Error) {Message = "Block invalid"};
             }
-            
-            bool succes = DataServer.Chain.NetworkMinePendingTransaction(dataMine.address, dataMine.block, dataMine.timemining, dataMine.difficulty);
-            
+
+            bool succes = DataServer.Chain.NetworkMinePendingTransaction(dataMine.Address, dataMine.Block,
+                dataMine.MiningTime, dataMine.Difficulty);
+
             if (succes)
             {
                 return new Protocol(MessageType.Response) {Message = "Sucess"};
@@ -170,13 +173,18 @@ namespace Epicoin.Library.Net.Server
                 return new Protocol(MessageType.Error) {Message = "failed"};
             }
         }
-        
-        public static Protocol AskPeer(Protocol prot)
+
+        public static Protocol AskPeer()
         {
             return new Protocol(MessageType.Response) {PeerList = DataServer.PeerList};
         }
 
-        public static Protocol AskChainStats(Protocol prot)
+        public static Protocol SendPeer(Protocol protocol)
+        {
+            return new Protocol(MessageType.Error) {Message = "Not Implemented"};
+        }
+
+        public static Protocol AskChainStats()
         {
             DataChainStats stats = new DataChainStats();
             stats.Valid = DataServer.Chain.IsvalidChain();
@@ -188,6 +196,5 @@ namespace Epicoin.Library.Net.Server
             stats.Name = Blockchain.Blockchain.Name;
             return new Protocol(MessageType.Response) {Stats = stats};
         }
-        
     }
 }

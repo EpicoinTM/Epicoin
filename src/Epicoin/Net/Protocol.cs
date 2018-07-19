@@ -8,7 +8,7 @@ namespace Epicoin.Library.Net
     public enum MessageType
     {
         Response,
-        Error,      
+        Error,
         Transaction,
         AskChain,
         AskLastestBlock,
@@ -17,8 +17,9 @@ namespace Epicoin.Library.Net
         MinedBlock,
         AskChainStats,
         AskPeer,
+        SendPeer
     }
-    
+
     [Serializable]
     public class Protocol
     {
@@ -32,7 +33,7 @@ namespace Epicoin.Library.Net
             this.Chain = null;
             this.Stats = null;
         }
-        
+
         public MessageType Type { get; set; }
         public string Message { get; set; }
         public DataTransaction Transaction { get; set; }

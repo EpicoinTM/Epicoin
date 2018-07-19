@@ -6,21 +6,21 @@ namespace Epicoin.Library.Blockchain
     public class Blockchain
     {
         public static readonly string Name = "Epicoin";
-        
+
         protected int difficulty = 5;
         protected List<Block> Chain = null;
 
         public List<Transaction> PendingTransactions;
-        
-        protected int miningReward = 10;
-        
+
+        protected int MiningReward = 10;
+
         public List<Block> BlockToMines;
         public Block BlockToMine;
 
-        public readonly int timebtwblock = 42;
-        
-        protected string addressCreator;
-        
+        public readonly int TimeBetweenBlock = 42;
+
+        public string AddressCreator;
+
         public List<Transaction> Pending => PendingTransactions;
 
         public int Difficulty => difficulty;
@@ -35,15 +35,15 @@ namespace Epicoin.Library.Blockchain
         {
             this.Chain = new List<Block>();
             this.PendingTransactions = new List<Transaction>();
-            this.addressCreator = addressCreator;
-            this.BlockToMines =  new List<Block>();                
+            this.AddressCreator = addressCreator;
+            this.BlockToMines = new List<Block>();
         }
 
         public Block CreateGenesisBlock()
         {
             Block genesisBlock = new Block(0, DateTime.Now.Ticks);
-            genesisBlock.AddTransaction(new Transaction(null, this.addressCreator, 42));
-            genesisBlock.AddTransaction(new Transaction(null, this.addressCreator, 500));
+            genesisBlock.AddTransaction(new Transaction(null, this.AddressCreator, 42));
+            genesisBlock.AddTransaction(new Transaction(null, this.AddressCreator, 500));
             genesisBlock.AddPreviousHash("");
             genesisBlock.MineBlock(this.difficulty);
             return genesisBlock;
@@ -63,7 +63,7 @@ namespace Epicoin.Library.Blockchain
         {
             this.Chain.Add(b);
         }
-        
+
         private void SetBlock(Block b)
         {
             b.AddPreviousHash(this.GetLatestBlock().Hashblock);
@@ -85,7 +85,7 @@ namespace Epicoin.Library.Blockchain
             {
                 index = this.BlockToMines[this.BlockToMines.Count - 1].Index;
             }
-            
+
             this.BlockToMine = new Block(index + 1, DateTime.Now.Ticks);
             this.SetBlock(this.BlockToMine);
             while (!this.BlockToMine.IsFull() && Epicoin.Continue)
@@ -96,7 +96,7 @@ namespace Epicoin.Library.Blockchain
                     this.PendingTransactions.RemoveAt(0);
                 }
             }
-            
+
             this.BlockToMines.Add(this.BlockToMine);
 
             return true;
@@ -119,18 +119,18 @@ namespace Epicoin.Library.Blockchain
                 this.BlockToMines[0].Timestamp = DateTime.Now.Ticks;
             }
         }
-        
-        
+
+
         public bool MinePendingTransaction(string minerAdress)
         {
             try
             {
                 Block mineblock = new Block(
-                                                this.BlockToMines[0].Index, 
-                                                this.BlockToMines[0].Timestamp, 
-                                                this.BlockToMines[0].Data, 
-                                                this.BlockToMines[0].PreviousHash
-                                            );
+                    this.BlockToMines[0].Index,
+                    this.BlockToMines[0].Timestamp,
+                    this.BlockToMines[0].Data,
+                    this.BlockToMines[0].PreviousHash
+                );
                 long start = DateTime.Now.Ticks;
                 mineblock.MineBlock(this.difficulty);
                 long miningtime = DateTime.Now.Ticks - start;
@@ -142,7 +142,7 @@ namespace Epicoin.Library.Blockchain
                         return false;
                     }
                 }
-                
+
                 this.AddBlock(mineblock);
                 this.BlockToMines.RemoveAt(0);
                 this.ManageDifficulty(miningtime);
@@ -154,9 +154,10 @@ namespace Epicoin.Library.Blockchain
                     this.Validate();
                     return false;
                 }
-            
-                Transaction reward = new Transaction(null, minerAdress, this.miningReward);
-                Console.WriteLine("[M] Block mined " + mineblock.Index + " : " + mineblock.Hashblock + " by " + minerAdress);
+
+                Transaction reward = new Transaction(null, minerAdress, this.MiningReward);
+                Console.WriteLine("[M] Block mined " + mineblock.Index + " : " + mineblock.Hashblock + " by " +
+                                  minerAdress);
                 this.AddTransaction(reward);
                 return true;
             }
@@ -168,7 +169,7 @@ namespace Epicoin.Library.Blockchain
 
         private void ManageDifficulty(long miningtime)
         {
-            if (miningtime <= this.timebtwblock * 1000000)
+            if (miningtime <= this.TimeBetweenBlock * 1000000)
             {
                 this.difficulty++;
             }
@@ -179,7 +180,7 @@ namespace Epicoin.Library.Blockchain
             }
         }
 
-        
+
         public bool NetworkMinePendingTransaction(string minerAdress, Block b, long miningtime, int difficuty)
         {
             try
@@ -191,7 +192,7 @@ namespace Epicoin.Library.Blockchain
                         return false;
                     }
                 }
-                
+
                 string target = "";
                 for (int i = 0; i < difficulty; i++)
                 {
@@ -202,10 +203,9 @@ namespace Epicoin.Library.Blockchain
                 {
                     return false;
                 }
-                
+
                 this.AddBlock(b);
                 this.ManageDifficulty(miningtime);
-
 
 
                 if (!this.IsvalidChain())
@@ -213,11 +213,11 @@ namespace Epicoin.Library.Blockchain
                     this.Validate();
                     return false;
                 }
-                
+
                 this.BlockToMines.RemoveAt(0);
                 this.NextBlock();
-                
-                Transaction reward = new Transaction(null, minerAdress, this.miningReward);
+
+                Transaction reward = new Transaction(null, minerAdress, this.MiningReward);
                 Console.WriteLine("[M] Block mined " + b.Index + " : " + b.Hashblock + " by " + minerAdress);
                 this.AddTransaction(reward);
                 return true;
@@ -251,20 +251,19 @@ namespace Epicoin.Library.Blockchain
                         }
                     }
                 }
-                
+
                 if (amount - t.Amount >= 0 || t.FromAddress == null)
                 {
                     this.PendingTransactions.Add(t);
-                    //Console.Write(" : accepted\n");
                     return true;
                 }
+
                 return false;
             }
             catch (Exception)
             {
                 return false;
             }
-            
         }
 
         public bool IsvalidChain()
@@ -304,23 +303,22 @@ namespace Epicoin.Library.Blockchain
         public int GetBalanceOfAddress(string address)
         {
             int amount = 0;
-            for (int i = 0; i < this.Chain.Count; i++)
+            foreach (var block in this.Chain)
             {
-                for (int j = 0; j < this.Chain[i].Data.Count; j++)
+                foreach (var transaction in block.Data)
                 {
-                    Transaction t = this.Chain[i].Data[j];
-                    if (t.FromAddress == address)
+                    if (transaction.FromAddress == address)
                     {
-                        amount -= t.Amount;
+                        amount -= transaction.Amount;
                     }
 
-                    if (t.ToAddress == address)
+                    if (transaction.ToAddress == address)
                     {
-                        amount += t.Amount;
+                        amount += transaction.Amount;
                     }
                 }
             }
-            
+
             return amount;
         }
 
@@ -330,13 +328,13 @@ namespace Epicoin.Library.Blockchain
             {
                 return;
             }
-            
+
             if (newChain.Chainlist.Count > this.Chain.Count)
             {
                 this.Chain = newChain.Chainlist;
                 this.Validate();
             }
-            
+
             if (newChain.Chainlist.Count == this.Chain.Count)
             {
                 int i;
@@ -346,27 +344,27 @@ namespace Epicoin.Library.Blockchain
                     {
                         break;
                     }
-                    
+
                     if (this.Chain[i].nonce != newChain.Chainlist[i].nonce)
                     {
                         break;
                     }
-                    
+
                     if (this.Chain[i].PreviousHash != newChain.Chainlist[i].PreviousHash)
                     {
                         break;
                     }
-                    
+
                     if (this.Chain[i].Hashblock != newChain.Chainlist[i].Hashblock)
                     {
                         break;
                     }
-                    
+
                     if (this.Chain[i].Timestamp != newChain.Chainlist[i].Timestamp)
                     {
                         break;
                     }
-                    
+
                     if (this.Chain[i].Data != newChain.Chainlist[i].Data)
                     {
                         break;
@@ -384,8 +382,8 @@ namespace Epicoin.Library.Blockchain
                             this.AddTransaction(e);
                         }
                     }
-                    
                 }
+
                 this.Validate();
             }
         }

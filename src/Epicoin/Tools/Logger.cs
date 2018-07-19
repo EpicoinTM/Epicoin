@@ -4,27 +4,27 @@ namespace Epicoin.Library.Tools
 {
     public class Logger
     {
-        protected List<string> buffer;
-        protected int bufferlenght = 20;
+        private List<string> _buffer;
+        private const int Bufferlenght = 20;
 
         public Logger()
         {
-            this.buffer = new List<string>();
+            this._buffer = new List<string>();
         }
 
         public void Write(string log)
         {
-            this.buffer.Add(log);
-            if (this.buffer.Count > this.bufferlenght)
+            this._buffer.Add(log);
+            if (this._buffer.Count > Bufferlenght)
             {
-                this.buffer.RemoveAt(0);
+                this._buffer.RemoveAt(0);
             }
         }
 
         public string Read()
         {
             string log = "";
-            foreach (var message in this.buffer)
+            foreach (var message in this._buffer)
             {
                 log += message + "\n";
             }
@@ -32,10 +32,10 @@ namespace Epicoin.Library.Tools
             return log;
         }
 
-        public string pop()
+        public string Pop()
         {
             string text = Read();
-            this.buffer = new List<string>();
+            this._buffer = new List<string>();
             return text;
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Epicoin.Library.Tools;
 
 namespace Epicoin.Library.Blockchain
@@ -6,7 +7,7 @@ namespace Epicoin.Library.Blockchain
     public class Block
     {
         public const int nb_trans = 3;
-        
+
         protected int index;
         protected long timestamp;
         protected List<Transaction> data;
@@ -50,7 +51,7 @@ namespace Epicoin.Library.Blockchain
         {
             this.index = index;
             this.timestamp = timestamp;
-            this.data = data == null ? new List<Transaction>() : data;
+            this.data = data ?? new List<Transaction>();
             this.previousHash = previousHash;
         }
 
@@ -65,29 +66,17 @@ namespace Epicoin.Library.Blockchain
                     serialyzedata += " ; ";
                 }
             }
-            
+
             serialyzedata += "}";
-            
-            string hash = Hash.CpuGenerate(this.index.ToString() + this.timestamp + serialyzedata + this.previousHash + this.nonce);
+
+            string hash = Hash.CpuGenerate(this.index.ToString() + this.timestamp + serialyzedata + this.previousHash +
+                                           this.nonce);
             return hash;
         }
-        
+
         public string CalculateHashGpu()
         {
-            string serialyzedata = "{";
-            for (int i = 0; i < this.data.Count; i++)
-            {
-                serialyzedata += this.data[i].ToString();
-                if (i < this.data.Count - 1)
-                {
-                    serialyzedata += " ; ";
-                }
-            }
-            
-            serialyzedata += "}";
-            
-            string hash = Hash.CpuGenerate(this.index.ToString() + this.timestamp + serialyzedata + this.previousHash + this.nonce);
-            return hash;
+            throw new NotImplementedException("Block.CalculateHashGpu: TO DO");
         }
 
         public void AddPreviousHash(string h)
@@ -97,7 +86,7 @@ namespace Epicoin.Library.Blockchain
 
         public void MineBlock(int difficulty)
         {
-            string hash = this.CalculateHashGpu();
+            string hash = this.CalculateHash();
             string target = "";
             for (int i = 0; i < difficulty; i++)
             {
@@ -107,18 +96,16 @@ namespace Epicoin.Library.Blockchain
             while (hash.Substring(0, difficulty) != target)
             {
                 this.nonce++;
-                hash = this.CalculateHashGpu();
+                hash = this.CalculateHash();
             }
 
             this.hashblock = hash;
-            
         }
-        
-        
+
 
         public void AddTransaction(Transaction t)
         {
-            if (this.data.Count < Block.nb_trans)
+            if (this.data.Count < nb_trans)
             {
                 this.data.Add(t);
             }
@@ -126,7 +113,7 @@ namespace Epicoin.Library.Blockchain
 
         public bool IsFull()
         {
-            return this.data.Count == Block.nb_trans;
+            return this.data.Count == nb_trans;
         }
     }
 }

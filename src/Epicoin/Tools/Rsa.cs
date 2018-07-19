@@ -7,10 +7,9 @@ namespace Epicoin.Library.Tools
 {
     public static class Rsa
     {
-
-        public static string[] GenKey(int nb_byte)
+        public static string[] GenKey(int nbByte)
         {
-            RSACryptoServiceProvider csp = new RSACryptoServiceProvider(nb_byte);
+            RSACryptoServiceProvider csp = new RSACryptoServiceProvider(nbByte);
             RSAParameters privKey = csp.ExportParameters(true);
             RSAParameters pubKey = csp.ExportParameters(false);
             string priKeyString = RsaToString(privKey);
@@ -31,8 +30,8 @@ namespace Epicoin.Library.Tools
         {
             StringReader sr = new System.IO.StringReader(key);
             XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(RSAParameters));
-            RSAParameters RsaKey = (RSAParameters) xs.Deserialize(sr);
-            return RsaKey;
+            RSAParameters rsaKey = (RSAParameters) xs.Deserialize(sr);
+            return rsaKey;
         }
 
         public static string Encrypt(string pubKey, string text)
@@ -53,6 +52,6 @@ namespace Epicoin.Library.Tools
             byte[] bytesPlainTextData = csp.Decrypt(bytesCypherText, false);
             string plainTextData = System.Text.Encoding.Unicode.GetString(bytesPlainTextData);
             return plainTextData;
-}
+        }
     }
 }

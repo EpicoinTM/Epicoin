@@ -5,7 +5,7 @@ namespace Epicoin.Library.Net.Server
     public class DataTcpClient
     {
         public TcpClient Client { get; }
-        
+
         public bool IsQueued { get; set; }
 
         public DataTcpClient(TcpClient client)

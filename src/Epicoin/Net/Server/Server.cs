@@ -10,7 +10,7 @@ namespace Epicoin.Library.Net.Server
     {
         public Server(int port, Blockchain.Blockchain chain)
         {
-            UPnP upnp = new UPnP(port);
+            UPnP.init(new int[1] {port});
             DataServer.Initialize(IPAddress.Any, port, chain);
             this.Init();
         }
@@ -40,7 +40,6 @@ namespace Epicoin.Library.Net.Server
                 tasks.Start();
                 poll.Start();
                 poll.Join();
-                
             }
             catch (Exception e)
             {
@@ -48,6 +47,7 @@ namespace Epicoin.Library.Net.Server
                 Console.WriteLine(e);
                 throw;
             }
+
             return;
         }
 
@@ -58,19 +58,20 @@ namespace Epicoin.Library.Net.Server
                 try
                 {
                     Socket clientSocket = DataServer._sock.Accept();
-                    Log(ConsoleColor.Green, "[", "S", "] Accept connection from " + clientSocket.RemoteEndPoint.ToString());
+                    Log(ConsoleColor.Green, "[", "S",
+                        "] Accept connection from " + clientSocket.RemoteEndPoint.ToString());
                     TcpClient client = new TcpClient
                     {
                         Client = clientSocket
                     };
                     DataServer.Clients.Add(new DataTcpClient(client));
-                    
                 }
                 catch (Exception)
                 {
                     break;
                 }
             }
+
             return;
         }
 
@@ -92,13 +93,15 @@ namespace Epicoin.Library.Net.Server
                             DataServer.Tasks.Enqueue(client);
                         }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Console.WriteLine(e);
                     }
+
                     i++;
                 }
             }
+
             return;
         }
 
@@ -115,7 +118,7 @@ namespace Epicoin.Library.Net.Server
 
                 try
                 {
-                    Thread requestTh = new Thread(() => this.HandleRequests(client)) { IsBackground = true};
+                    Thread requestTh = new Thread(() => this.HandleRequests(client)) {IsBackground = true};
                     requestTh.Start();
                 }
                 catch (Exception e)
@@ -125,12 +128,12 @@ namespace Epicoin.Library.Net.Server
                     throw;
                 }
             }
+
             return;
         }
 
         public void HandleRequests(DataTcpClient client)
         {
-
             Protocol msg = Receive(client.Client);
             Protocol resp;
             if (msg != null)
@@ -140,48 +143,49 @@ namespace Epicoin.Library.Net.Server
                     case MessageType.AskBlocknumber:
                         resp = RequestServer.AskBlockNumber(msg);
                         break;
-                            
+
                     case MessageType.AskBlockToMine:
-                        resp = RequestServer.AskBlockToMine(msg);
+                        resp = RequestServer.AskBlockToMine();
                         break;
-                        
+
                     case MessageType.AskChain:
-                        resp = RequestServer.AskChain(msg);
+                        resp = RequestServer.AskChain();
                         break;
-                        
+
                     case MessageType.AskLastestBlock:
-                        resp = RequestServer.AskLastestBlock(msg);
+                        resp = RequestServer.AskLastestBlock();
                         break;
-                        
+
                     case MessageType.AskPeer:
-                        resp = RequestServer.AskPeer(msg);
+                        resp = RequestServer.AskPeer();
                         break;
-                        
+
                     case MessageType.MinedBlock:
                         resp = RequestServer.MinedBlock(msg);
                         break;
-                        
+
                     case MessageType.Transaction:
                         resp = RequestServer.Transaction(msg);
                         break;
-                        
+
                     case MessageType.AskChainStats:
-                        resp = RequestServer.AskChainStats(msg);
+                        resp = RequestServer.AskChainStats();
                         break;
-                        
+
                     default:
                         resp = new Protocol(MessageType.Error)
-                            { Message = "You did something, but I don't know what." };
+                            {Message = "You did something, but I don't know what."};
                         break;
                 }
             }
             else
             {
                 resp = new Protocol(MessageType.Error)
-                    { Message = "You did something, but I don't know what." };
+                    {Message = "You did something, but I don't know what."};
             }
+
             LogRequest(msg.Type, client);
-            
+
             Send(client.Client, resp);
             client.IsQueued = false;
             return;
@@ -225,9 +229,10 @@ namespace Epicoin.Library.Net.Server
                 c = ConsoleColor.Green;
                 stype = type.ToString();
             }
+
             Log(c, "[", "SINFO", "][" + stype + "] request from " + client.Client.Client.RemoteEndPoint.ToString());
         }
-        
+
         public static void Log(ConsoleColor color, string pre, string middle, string suf)
         {
             Console.Write(pre);
@@ -236,6 +241,5 @@ namespace Epicoin.Library.Net.Server
             Console.ResetColor();
             Console.WriteLine(suf);
         }
-        
     }
 }

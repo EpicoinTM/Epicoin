@@ -5,7 +5,7 @@ using Epicoin.Library.Blockchain;
 using Epicoin.Library.Tools;
 
 namespace Epicoin.Library.Net.Client
-{    
+{
     public class Client
     {
         public Client(string address, int port)
@@ -13,11 +13,11 @@ namespace Epicoin.Library.Net.Client
             Network.Connect(address, port);
         }
 
-        public string SendTransaction(DataTransaction trans)
+        public string SendTransaction(DataTransaction transaction)
         {
             try
             {
-                return Network.SendTransaction(trans);
+                return Network.SendTransaction(transaction);
             }
             catch (Exception e)
             {
@@ -27,40 +27,38 @@ namespace Epicoin.Library.Net.Client
 
         public void Mine(string workerAddress)
         {
-            Epicoin.log = new Logger();
+            Epicoin.Log = new Logger();
             while (DataClient.Continue)
             {
                 Thread.Sleep(1000);
-                DataMine data;
                 try
                 {
-                    data = Network.AskBlockToMine();
+                    var data = Network.AskBlockToMine();
                     if (data == null)
                     {
-                        Epicoin.log.Write("[CM] No blocks to mine");
+                        Epicoin.Log.Write("[CM] No blocks to mine");
                         Console.WriteLine("[CM] No blocks to mine");
                         Thread.Sleep(1000);
                     }
                     else
                     {
-                        int difficulty = data.difficulty;
-                        Block block = data.block;
-                        Epicoin.log.Write("[CM] Mining ...");
+                        int difficulty = data.Difficulty;
+                        Block block = data.Block;
+                        Epicoin.Log.Write("[CM] Mining ...");
                         Console.WriteLine("[CM] Mining ...");
                         long start = DateTime.Now.Ticks;
                         block.MineBlock(difficulty);
                         long miningtime = DateTime.Now.Ticks - start;
-                        Epicoin.log.Write("[CM] Creating Block " + block.Index + " : " + block.Hashblock
-                        + " : difficulty " + difficulty);
+                        Epicoin.Log.Write("[CM] Creating Block " + block.Index + " : " + block.Hashblock
+                                          + " : difficulty " + difficulty);
                         Console.WriteLine("[CM] Creating Block " + block.Index + " : " + block.Hashblock
-                        + " : difficulty " + difficulty);
-                        Epicoin.log.Write("[CM] Sending block mined ...");
+                                          + " : difficulty " + difficulty);
+                        Epicoin.Log.Write("[CM] Sending block mined ...");
                         Console.WriteLine("[CM] Sending block mined ...");
                         DataMine send = new DataMine(difficulty, block, workerAddress, miningtime);
                         string resp = Network.SendMinedBlock(send);
                         Console.WriteLine("[M] " + resp);
                     }
-                    
                 }
                 catch (Exception e)
                 {
@@ -68,6 +66,7 @@ namespace Epicoin.Library.Net.Client
                     continue;
                 }
             }
+
             return;
         }
 
@@ -83,7 +82,7 @@ namespace Epicoin.Library.Net.Client
                 return null;
             }
         }
-        
+
         public Block GetLastestBlock()
         {
             try
@@ -96,7 +95,7 @@ namespace Epicoin.Library.Net.Client
                 return null;
             }
         }
-        
+
         public Block GetBlockNumber(int index)
         {
             try
@@ -122,7 +121,6 @@ namespace Epicoin.Library.Net.Client
                 Console.WriteLine("[G] " + e.Message);
                 return 0;
             }
-            
         }
 
         public DataChainStats GetChainStats()

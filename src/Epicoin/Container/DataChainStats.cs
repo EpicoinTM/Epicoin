@@ -15,7 +15,6 @@ namespace Epicoin.Library.Container
 
         public DataChainStats()
         {
-            
         }
     }
 }

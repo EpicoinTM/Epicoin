@@ -6,17 +6,17 @@ namespace Epicoin.Library.Container
     [Serializable]
     public class DataMine
     {
-        public int difficulty;
-        public Block block;
-        public string address;
-        public long timemining;
-        
+        public int Difficulty;
+        public Block Block;
+        public string Address;
+        public long MiningTime;
+
         public DataMine(int difficulty, Block block, string address, long timeminig = 0)
         {
-            this.difficulty = difficulty;
-            this.block = block;
-            this.address = address;
-            this.timemining = timeminig;
+            this.Difficulty = difficulty;
+            this.Block = block;
+            this.Address = address;
+            this.MiningTime = timeminig;
         }
     }
 }

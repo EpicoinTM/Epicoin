@@ -9,16 +9,6 @@ namespace Epicoin.Library.Blockchain
         public int Amount;
         public string Timestamp;
 
-        /*
-        public string FromAddress => fromAddress;
-
-        public string ToAddress => toAddress;
-
-        public int Amount => amount;
-
-        public string Timestamp => timestamp;
-        */
-
         public Transaction(string fromAddress, string toAddress, int amount)
         {
             this.FromAddress = fromAddress;
@@ -29,7 +19,8 @@ namespace Epicoin.Library.Blockchain
 
         public override string ToString()
         {
-            return "(Transaction){ at " + this.Timestamp + " from " + (FromAddress ?? Blockchain.Name) + " ; to " + this.ToAddress + " : " + this.Amount + " }";
+            return "(Transaction){ at " + this.Timestamp + " from " + (FromAddress ?? Blockchain.Name) + " ; to " +
+                   this.ToAddress + " : " + this.Amount + " }";
         }
     }
 }

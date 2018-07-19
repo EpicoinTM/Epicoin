@@ -8,7 +8,6 @@ namespace Epicoin.Library.Net.Client
 {
     public static class Network
     {
-
         public static void Connect(string address, int port)
         {
             DataClient.Initialize(address, port);
@@ -21,7 +20,7 @@ namespace Epicoin.Library.Net.Client
                 DataClient.Client.Client.Connect(DataClient.IpAddressEntry.AddressList, port);
             }
         }
-        
+
         private static Protocol ReceiveMessage()
         {
             while (DataClient.Client.Client.Connected && DataClient.Client.Client.Available <= 1)
@@ -42,15 +41,15 @@ namespace Epicoin.Library.Net.Client
             return msg;
         }
 
-        public static Block AskBlockNumber(int n)
+        public static Block AskBlockNumber(int number)
         {
-            Protocol reqProtocol = new Protocol(MessageType.AskBlocknumber) {Message = n.ToString()};
+            Protocol reqProtocol = new Protocol(MessageType.AskBlocknumber) {Message = number.ToString()};
             byte[] buffer = Formatter.ToByteArray(reqProtocol);
             DataClient.Client.Client.Send(buffer, SocketFlags.None);
             Protocol receiveMessage = ReceiveMessage();
             return receiveMessage.Type != MessageType.Response ? null : receiveMessage.Block;
         }
-        
+
         public static DataMine AskBlockToMine()
         {
             Protocol reqProtocol = new Protocol(MessageType.AskBlockToMine);
@@ -59,12 +58,12 @@ namespace Epicoin.Library.Net.Client
             Protocol receiveMessage = ReceiveMessage();
             return receiveMessage.Type != MessageType.Response ? null : receiveMessage.Mine;
         }
-        
+
         public static Blockchain.Blockchain AskChain()
         {
             int lenght = AskChainStats().Lenght;
             Blockchain.Blockchain chain = new Blockchain.Blockchain("");
-            
+
             for (int i = 0; i < lenght; i++)
             {
                 Block b = AskBlockNumber(i);
@@ -76,7 +75,7 @@ namespace Epicoin.Library.Net.Client
 
             return chain;
         }
-        
+
         public static Block AskLatestBlock()
         {
             Protocol reqProtocol = new Protocol(MessageType.AskLastestBlock);
@@ -85,23 +84,23 @@ namespace Epicoin.Library.Net.Client
             Protocol receiveMessage = ReceiveMessage();
             return receiveMessage.Type != MessageType.Response ? null : receiveMessage.Block;
         }
-        
-        public static string SendMinedBlock(DataMine mine)
+
+        public static string SendMinedBlock(DataMine minedata)
         {
-            Protocol reqProtocol = new Protocol(MessageType.MinedBlock) {Mine = mine};
+            Protocol reqProtocol = new Protocol(MessageType.MinedBlock) {Mine = minedata};
             byte[] buffer = Formatter.ToByteArray(reqProtocol);
             DataClient.Client.Client.Send(buffer, SocketFlags.None);
             Protocol receiveMessage = ReceiveMessage();
-            return receiveMessage.Type != MessageType.Response ? receiveMessage.Message : receiveMessage.Message;
+            return receiveMessage.Message;
         }
 
-        public static string SendTransaction(DataTransaction trans)
+        public static string SendTransaction(DataTransaction transaction)
         {
-            Protocol reqProtocol = new Protocol(MessageType.Transaction) {Transaction = trans};
+            Protocol reqProtocol = new Protocol(MessageType.Transaction) {Transaction = transaction};
             byte[] buffer = Formatter.ToByteArray(reqProtocol);
             DataClient.Client.Client.Send(buffer, SocketFlags.None);
             Protocol receiveMessage = ReceiveMessage();
-            return receiveMessage.Type != MessageType.Response ? receiveMessage.Message : receiveMessage.Message;
+            return receiveMessage.Message;
         }
 
         public static DataChainStats AskChainStats()

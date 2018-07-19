@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace Epicoin.Library.Tools
 {
-    public class Hash
+    public static class Hash
     {
         public static string CpuGenerate(string data)
         {
@@ -14,8 +15,7 @@ namespace Epicoin.Library.Tools
 
         public static string GpuGenerate(string data)
         {
-            
-            return "";
+            throw new NotImplementedException("Hash.GpuGenerate: TO DO");
         }
     }
 }

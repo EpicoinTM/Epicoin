@@ -5,26 +5,26 @@ namespace Epicoin.Library.Net
 {
     internal static class Formatter
     {
-        public static byte[] ToByteArray<T>(T elm)
+        public static byte[] ToByteArray<T>(T obj)
         {
-            if (elm == null)
+            if (obj == null)
             {
                 return null;
             }
 
-            string json = JsonConvert.SerializeObject(elm);
-            byte[] mesBytes = Encoding.Default.GetBytes(json);
-            return mesBytes;
+            string json = JsonConvert.SerializeObject(obj);
+            byte[] bytes = Encoding.Default.GetBytes(json);
+            return bytes;
         }
 
-        public static T ToObject<T>(byte[] mesBytes)
+        public static T ToObject<T>(byte[] bytes)
         {
-            if (mesBytes == null)
+            if (bytes == null)
             {
                 return default(T);
             }
 
-            string json = Encoding.Default.GetString(mesBytes);
+            string json = Encoding.Default.GetString(bytes);
             T obj = JsonConvert.DeserializeObject<T>(json);
             return obj;
         }
