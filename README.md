@@ -1,8 +1,10 @@
 # Epicoin
 
-Code quality : [![Codacy Badge](https://api.codacy.com/project/badge/Grade/35e7c9f78de14aec90b6e95186a7dc21)](https://www.codacy.com/app/cedricfarinazzo/Epicoin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=EpicoinTM/Epicoin&amp;utm_campaign=Badge_Grade)        
+[![Discord](https://img.shields.io/discord/484425384360935481.svg)](https://discord.gg/NHrm2fc)    
 
 ### Build Status
+
+Code quality : [![Codacy Badge](https://api.codacy.com/project/badge/Grade/35e7c9f78de14aec90b6e95186a7dc21)](https://www.codacy.com/app/cedricfarinazzo/Epicoin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=EpicoinTM/Epicoin&amp;utm_campaign=Badge_Grade)    
 
 | Branch | Status |
 |--------|--------|
